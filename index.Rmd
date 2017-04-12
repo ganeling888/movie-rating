@@ -1,0 +1,9 @@
+---
+title: "movie rating"
+author: "GAN LING"
+date: "2017年4月12日"
+output: html_document
+---
+
+## 
+
