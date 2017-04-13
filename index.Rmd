@@ -1,7 +1,7 @@
 ---
 title: "movie rating"
 author: "GAN LING"
-date: "2017年4月12日"
+date: "2017/4/12"
 output: html_document
 ---
 
@@ -20,32 +20,30 @@ movie = read.csv("movies_utf8_clean.dat", sep = "=", header = FALSE, col.names =
 load("training_ratings.RData")
 ```
 
-#### combine the data
+#### combine the data, because this needs time, we can save the result for next time
 
 ```{r}
-combine_user = function (users, training_ratings){
-    k = 1
-    for (d in training_ratings$user){
-        temp_row = data.frame(users[users$UserID == d, c(2,3,4)])
-        if (k == 1){
-            #print(temp_row)
-            #temp_row[,1] = as.factor(temp_row[,1])
-            
-            #temp_get = matrix(temp_row, ncol = 3, nrow = 1)
-            temp_get = temp_row
-            #print(temp_get)
-            k = 0
-        }
-        else{
-            
-            #temp_row[,1] = as.factor(temp_row[,1])
-            #temp_row = matrix(temp_row, ncol = 3, nrow = 1)
-            temp_get = rbind(temp_get, temp_row)
-            #print(temp_get)
-        }
-    }
-    #print(temp_get)
-    cbind(training_ratings, temp_get)
-}
-newraitings = combine_user(users, training_ratings)
+# combine_user = function (users, training_ratings, stopnum){
+#     k = 1
+#     for (d in training_ratings$user){
+#         if (d > stopnum){
+#             break
+#         }
+#         temp_row = data.frame(users[users$UserID == d, c(2,3,4)])
+#         # print(temp_row)
+#         if (k == 1){
+#             temp_get = temp_row
+#             k = 0
+#         }
+#         else{
+#             temp_get = rbind(temp_get, temp_row)
+#         }
+#     }
+#     cbind(training_ratings[1:nrow(temp_get),], temp_get)
+# }
+# newraitings = combine_user(users, training_ratings, 3000)
+# save(newraitings, file = "newraitings.RData")
+
+#load the data we save to save time
+load("newraitings.RData")
 ```

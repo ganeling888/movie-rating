@@ -118,14 +118,49 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">movie rating</h1>
 <h4 class="author"><em>GAN LING</em></h4>
-<h4 class="date"><em>2017年4月12日</em></h4>
+<h4 class="date"><em>2017/4/12</em></h4>
 
 </div>
 
 
-<p><strong>load data</strong></p>
 <div id="load-data" class="section level4">
 <h4>load data</h4>
+<pre class="r"><code># before doing this, you need to use python to run the edit_users_movies_dat.py
+# file to clean the dat data
+# deal with users_clean.dat
+users = read.csv(&quot;users_clean.dat&quot;, sep = &quot;=&quot;, header = FALSE, col.names = c(&quot;UserID&quot;,&quot;Gender&quot;,&quot;Age&quot;,&quot;Occupation&quot;,&quot;Zip-code&quot;))
+# deal with movies_utf8_clean.dat
+movie = read.csv(&quot;movies_utf8_clean.dat&quot;, sep = &quot;=&quot;, header = FALSE, col.names = c(&quot;MovieID&quot;,&quot;Title&quot;,&quot;Genres&quot;))
+# deal with training_ratings_for_kaggle_comp.csv
+# training_ratings = read.csv(&quot;training_ratings_for_kaggle_comp.csv&quot;)
+# save(training_ratings, file = &quot;training_ratings.RData&quot;)
+load(&quot;training_ratings.RData&quot;)</code></pre>
+</div>
+<div id="combine-the-data-because-this-needs-time-we-can-save-the-result-for-next-time" class="section level4">
+<h4>combine the data, because this needs time, we can save the result for next time</h4>
+<pre class="r"><code># combine_user = function (users, training_ratings, stopnum){
+#     k = 1
+#     for (d in training_ratings$user){
+#         if (d &gt; stopnum){
+#             break
+#         }
+#         temp_row = data.frame(users[users$UserID == d, c(2,3,4)])
+#         # print(temp_row)
+#         if (k == 1){
+#             temp_get = temp_row
+#             k = 0
+#         }
+#         else{
+#             temp_get = rbind(temp_get, temp_row)
+#         }
+#     }
+#     cbind(training_ratings[1:nrow(temp_get),], temp_get)
+# }
+# newraitings = combine_user(users, training_ratings, 3000)
+# save(newraitings, file = &quot;newraitings.RData&quot;)
+
+#load the data we save to save time
+load(&quot;newraitings.RData&quot;)</code></pre>
 </div>
 
 
