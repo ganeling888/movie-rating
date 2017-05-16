@@ -136,8 +136,8 @@ movie = read.csv(&quot;movies_utf8_clean.dat&quot;, sep = &quot;=&quot;, header 
 # save(training_ratings, file = &quot;training_ratings.RData&quot;)
 load(&quot;training_ratings.RData&quot;)</code></pre>
 </div>
-<div id="combine-the-data-because-this-needs-time-we-can-save-the-result-for-next-time" class="section level4">
-<h4>combine the data, because this needs time, we can save the result for next time</h4>
+<div id="combine-the-data-because-this-needs-time-we-can-save-the-result-for-next-time-this-part-we-use-one-and-half-an-hour-to-deal-with-the-data-and-get-116858-observasion." class="section level4">
+<h4>combine the data, because this needs time, we can save the result for next time, this part we use one and half an hour to deal with the data and get 116858 observasion.</h4>
 <pre class="r"><code># combine_user = function (users, training_ratings, stopnum){
 #     k = 1
 #     for (d in training_ratings$user){
@@ -145,7 +145,7 @@ load(&quot;training_ratings.RData&quot;)</code></pre>
 #             break
 #         }
 #         temp_row = data.frame(users[users$UserID == d, c(2,3,4)])
-#         # print(temp_row)
+#         print(temp_row)
 #         if (k == 1){
 #             temp_get = temp_row
 #             k = 0
@@ -156,11 +156,12 @@ load(&quot;training_ratings.RData&quot;)</code></pre>
 #     }
 #     cbind(training_ratings[1:nrow(temp_get),], temp_get)
 # }
-# newraitings = combine_user(users, training_ratings, 3000)
-# save(newraitings, file = &quot;newraitings.RData&quot;)
+# # get all of the data out when the rating equal to 5. Because we only care about the data with the highest evaluation.
+# newraitings = combine_user(users, training_ratings[training_ratings$rating==5,], 6040)
+# save(newraitings, file = &quot;newraitings1.RData&quot;)
 
 #load the data we save to save time
-load(&quot;newraitings.RData&quot;)</code></pre>
+load(&quot;newraitings1.RData&quot;)</code></pre>
 </div>
 
 

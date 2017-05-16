@@ -20,7 +20,7 @@ movie = read.csv("movies_utf8_clean.dat", sep = "=", header = FALSE, col.names =
 load("training_ratings.RData")
 ```
 
-#### combine the data, because this needs time, we can save the result for next time, this part we use one and half an hour to deal with the data and get 116858 observasion.
+#### combine the data, because this needs time, we can save the result for next time, this part we use one and half an hour to deal with the data and get 116858 observasions.
 
 ```{r}
 # combine_user = function (users, training_ratings, stopnum){
@@ -48,3 +48,4 @@ load("training_ratings.RData")
 #load the data we save to save time
 load("newraitings1.RData")
 ```
+
