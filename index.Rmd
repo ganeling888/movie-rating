@@ -2,12 +2,15 @@
 title: "movie rating"
 author: "GAN LING"
 date: "2017/4/12"
-output: html_document
+output: 
+  html_document: 
+    fig_width: 15
 ---
 
 #### load data
 
 ```{r}
+library(ggplot2)
 # before doing this, you need to use python to run the edit_users_movies_dat.py
 # file to clean the dat data
 # deal with users_clean.dat
@@ -47,5 +50,181 @@ load("training_ratings.RData")
 
 #load the data we save to save time
 load("newraitings1.RData")
+```
+
+clean the data
+
+```{r}
+# see the structure of the data
+str(newraitings)
+# the column occupation is the index for the job of the evaluation person, then this column should be factor
+newraitings$Occupation = as.factor(newraitings$Occupation)
+# movie and user columns are also factors
+newraitings$user = as.factor(newraitings$user)
+newraitings$movie = as.factor(newraitings$movie)
+# then we don't need rating and id columns anymore
+newraitings = subset(newraitings, select = c(1, 2, 5, 6, 7))
+str(newraitings)
+head(newraitings, 10)
+```
+
+1. the simplest way is to calculate the amount of the 5 star movies and sort them in decresing order, then we can get the best movies for us
+
+```{r}
+bestmovie1 = as.matrix(head(sort(table(newraitings$movie), decreasing = TRUE),10))
+bestmovie1 = as.data.frame(bestmovie1)
+names(bestmovie1) = "count"
+bestmovie1 = cbind("movie_id" = rownames(bestmovie1), bestmovie1)
+rownames(bestmovie1) <- NULL
+```
+
+find the movie information for the table
+
+```{r}
+# let the movie_id to factor first
+movie$MovieID = as.factor(movie$MovieID)
+k = 1
+for (i in bestmovie1$movie_id){
+    temp_row = data.frame(movie[movie$MovieID == i, c(2, 3)])
+    if (k == 1){
+        temp_get = temp_row
+        k = 0
+    }
+    else{
+        temp_get = rbind(temp_get, temp_row)
+    }
+}
+bestmovie1 = cbind(bestmovie1[1:nrow(temp_get),], temp_get)
+```
+
+*For this approach, out ten highest movies are:*
+
+```{r}
+bestmovie1$Title
+# define the function to draw the 5 best movies
+draw_best_movie = function (dataset, figuretitle = "Best Movie and the Support Number"){
+    ggplot(data=dataset[1:5,], aes(x=reorder(Title, count[5:1]), fill=reorder(Title, count[5:1]), y = count)) +
+    geom_bar(stat="identity" , width = 0.6) +
+    geom_text(label=dataset[1:5,]$count, colour = "red", vjust=-0.2) +
+    ggtitle(figuretitle) +
+    labs(y="Support Number for this Movie", x="Movie", fill = "Movie Title") +
+    theme_bw()
+    
+}
+draw_best_movie(bestmovie1)
+```
+
+2. select the best movie group by Age
+
+How many observers do we have? assemble the user information
+
+```{r}
+user_freq = as.data.frame(table(newraitings$user))
+colnames(user_freq) = c("user_id", "5_star_count")
+# write the user information in it
+users$UserID = as.factor(users$UserID)
+k = 1
+for (d in user_freq$user_id){
+    temp_row = data.frame(users[users$UserID == d, c(2,3,4)])
+    if (k == 1){
+        temp_get = temp_row
+        k = 0
+    }
+    else{
+        temp_get = rbind(temp_get, temp_row)
+    }
+}
+user_freq = cbind(user_freq[1:nrow(temp_get),], temp_get)
+```
+
+*draw some pictures*
+
+===================================
+
+see the relation for the gender of the users
+
+```{r}
+Agefill = as.factor(user_freq$Age)
+ggplot(data=user_freq, aes(x=Gender, fill=Agefill)) +
+    geom_bar() +
+    ggtitle("Gender") +
+    labs(y="Number of Gender", x="Gender", fill = "Age") +
+    theme_bw()
+```
+
+From the picture we can see that there are two times of male than female in our sample
+
+Then draw the barplot for the age (because there are only seven different age)
+
+```{r}
+table(user_freq$Age)
+ggplot(data=user_freq, aes(x=Age, fill=Agefill)) +
+    geom_bar() +
+    ggtitle("Age") +
+    labs(y="Number of this Age", x="Age", fill = "Age") +
+    theme_bw()
+```
+
+now from the result we can see that some observers have the age equal to 1, then they are not valid data, we need to clean them
+
+```{r}
+newraitings = newraitings[newraitings$Age != 1, ]
+user_freq = user_freq[user_freq$Age != 1, ]
+table(user_freq$Age)
+```
+
+Then the age can divide into six group, 18   25   35   45   50   56 
+
+```{r}
+library(psych)
+# define the function first
+get_best_movies = function(age, number = 10){
+    bestmovie = as.matrix(head(sort(table(newraitings[newraitings$Age==age,]$movie), decreasing = TRUE),number))
+    bestmovie = as.data.frame(bestmovie)
+    names(bestmovie) = "count"
+    bestmovie = cbind("movie_id" = rownames(bestmovie), bestmovie)
+    rownames(bestmovie) <- NULL
+    
+    k = 1
+    for (i in bestmovie$movie_id){
+    temp_row = data.frame(movie[movie$MovieID == i, c(2, 3)])
+    if (k == 1){
+        temp_get = temp_row
+        k = 0
+    }
+    else{
+        temp_get = rbind(temp_get, temp_row)
+    }
+}
+    bestmovie = cbind(bestmovie[1:nrow(temp_get),], temp_get)
+    return(bestmovie)
+    
+}
+
+# Then run the function to get the result:
+# for the group age 18
+bestmovie2 = get_best_movies(18)
+bestmovie2$Title
+draw_best_movie(bestmovie2, figuretitle = "Best Movie and the Support Number for Age 18")
+# for the group age 25
+bestmovie2 = get_best_movies(25)
+bestmovie2$Title
+draw_best_movie(bestmovie2, figuretitle = "Best Movie and the Support Number for Age 25")
+# for the group age 35
+bestmovie2 = get_best_movies(35)
+bestmovie2$Title
+draw_best_movie(bestmovie2, figuretitle = "Best Movie and the Support Number for Age 35")
+# for the group age 45
+bestmovie2 = get_best_movies(45)
+bestmovie2$Title
+draw_best_movie(bestmovie2, figuretitle = "Best Movie and the Support Number for Age 45")
+# for the group age 50
+bestmovie2 = get_best_movies(50)
+bestmovie2$Title
+draw_best_movie(bestmovie2, figuretitle = "Best Movie and the Support Number for Age 50")
+# for the group age 56
+bestmovie2 = get_best_movies(56)
+bestmovie2$Title
+draw_best_movie(bestmovie2, figuretitle = "Best Movie and the Support Number for Age 56")
 ```
 
