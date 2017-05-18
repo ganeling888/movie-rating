@@ -520,8 +520,63 @@ write.table(submission, file = &quot;submission.csv&quot;,
 </div>
 <div id="knn" class="section level4">
 <h4>KNN</h4>
-<pre class="r"><code># library(class)
-# knn.pred = knn(trainingset,testset,trainingset$rating, k = 4)</code></pre>
+<pre class="r"><code>library(class)
+require(caret)
+seed = as.numeric(as.Date(&quot;2017-04-12&quot;))
+set.seed(seed)
+inTrain = createDataPartition(trainingset$rating, p=0.7)
+testset = trainingset[-inTrain[[1]],]
+trainingset &lt;- trainingset[inTrain[[1]],]
+dealwithdata = function(dataset){
+    dataset$movie = as.integer(dataset$movie)
+    for (i in 1:nrow(dataset)){
+        if (dataset[i,2]==&quot;M&quot;){
+            dataset[i,2]=1
+        }
+        else{
+            dataset[i,2]=2
+        }
+    }
+    dataset$Gender = as.integer(dataset$Gender)
+    dataset$Occupation = as.integer(dataset$Occupation)
+    return(dataset)
+}
+trainingset = dealwithdata(trainingset)
+testset = dealwithdata(testset)
+knn.pred = knn(trainingset,testset,trainingset$rating, k = 4)
+confusionMatrix(knn.pred, testset$rating)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    1    2    3    4    5
+##          1   45   43   48   20   11
+##          2   49  124  189  136   38
+##          3  138  361  806  722  271
+##          4   97  306  978 1540  832
+##          5   25   72  297  624  866
+## 
+## Overall Statistics
+##                                           
+##                Accuracy : 0.3914          
+##                  95% CI : (0.3811, 0.4018)
+##     No Information Rate : 0.3522          
+##     P-Value [Acc &gt; NIR] : 1.91e-14        
+##                                           
+##                   Kappa : 0.1516          
+##  Mcnemar's Test P-Value : &lt; 2.2e-16       
+## 
+## Statistics by Class:
+## 
+##                      Class: 1 Class: 2 Class: 3 Class: 4 Class: 5
+## Sensitivity           0.12712  0.13687  0.34771   0.5062   0.4291
+## Specificity           0.98527  0.94671  0.76392   0.6045   0.8462
+## Pos Pred Value        0.26946  0.23134  0.35074   0.4103   0.4597
+## Neg Pred Value        0.96352  0.90348  0.76151   0.6925   0.8294
+## Prevalence            0.04098  0.10489  0.26835   0.3522   0.2336
+## Detection Rate        0.00521  0.01436  0.09331   0.1783   0.1003
+## Detection Prevalence  0.01933  0.06205  0.26603   0.4345   0.2181
+## Balanced Accuracy     0.55620  0.54179  0.55582   0.5554   0.6377</code></pre>
+<p>The accuracy out is 0.3979(not so high, so knn is not the best choice doing this)</p>
 </div>
 
 

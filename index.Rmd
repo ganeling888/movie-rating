@@ -309,6 +309,31 @@ write.table(submission, file = "submission.csv",
 #### KNN
 
 ```{r}
-# library(class)
-# knn.pred = knn(trainingset,testset,trainingset$rating, k = 4)
+library(class)
+require(caret)
+seed = as.numeric(as.Date("2017-04-12"))
+set.seed(seed)
+inTrain = createDataPartition(trainingset$rating, p=0.7)
+testset = trainingset[-inTrain[[1]],]
+trainingset <- trainingset[inTrain[[1]],]
+dealwithdata = function(dataset){
+    dataset$movie = as.integer(dataset$movie)
+    for (i in 1:nrow(dataset)){
+        if (dataset[i,2]=="M"){
+            dataset[i,2]=1
+        }
+        else{
+            dataset[i,2]=2
+        }
+    }
+    dataset$Gender = as.integer(dataset$Gender)
+    dataset$Occupation = as.integer(dataset$Occupation)
+    return(dataset)
+}
+trainingset = dealwithdata(trainingset)
+testset = dealwithdata(testset)
+knn.pred = knn(trainingset,testset,trainingset$rating, k = 4)
+confusionMatrix(knn.pred, testset$rating)
 ```
+
+The accuracy out is 0.3979(not so high, so knn is not the best choice doing this)
